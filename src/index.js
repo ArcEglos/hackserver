@@ -30,7 +30,7 @@ initializeDb( db => {
 	app.use(middleware({ config, db }));
 
 	// api router
-	app.use('/api', api({ config, db }));
+	app.use('/v1', api({ config, db }));
 
 	app.server.listen(process.env.PORT || config.port);
 
