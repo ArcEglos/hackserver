@@ -7,9 +7,9 @@ export default ({ config, db }) => resource({
 	id : 'buzz',
 
 	/** POST / - Create a new entity */
-	create({ body: {text, lifetime} }, res) {
+	create({ body: {message, lifetime} }, res) {
     const expirationDate = new Date().setSeconds(new Date().getSeconds() + lifetime);
-    Buzz.create({ text, expirationDate }).then(buzz => {
+    Buzz.create({ message, expirationDate }).then(buzz => {
       res.status(200).send(buzz);
     }, err => {
       console.error(err)
@@ -19,7 +19,7 @@ export default ({ config, db }) => resource({
 
 	// /** GET /:id - Return a given entity */
 	index( { params } , res) {
-    Buzz.find().then((buzzes) => {
+    Buzz.find().sort({expirationDate: -1}).limit(10).then((buzzes) => {
       res.json(buzzes);
     });
 	},
