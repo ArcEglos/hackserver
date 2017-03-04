@@ -7,19 +7,4 @@ const buzzSchema = new Schema({
   expirationDate: { type: Date }
 });
 
-return mongoose.model('Buzz', buzzSchema);
-
-const create = (message, lifetime) => {
-  const expirationDate = new Date().setSeconds(new Date().getSeconds() + lifetime);
-  const buzz = new Buzz({ message, expirationDate})
-
-  return buzz.save();
-}
-
-const getAlive = () => {
-  return Buzz.find({ expirationDate: { $gt: new Date() } }, 'message createdAt').exec();
-}
-
-export default {
-  create,
-}
+export default mongoose.model('Buzz', buzzSchema);
