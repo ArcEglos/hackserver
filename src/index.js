@@ -3,6 +3,7 @@ import express from 'express';
 import cors from 'cors';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
+import authParser from 'express-auth-parser'
 import initializeDb from './db';
 import middleware from './middleware';
 import api from './api';
@@ -22,6 +23,8 @@ app.use(cors({
 app.use(bodyParser.json({
 	limit : config.bodyLimit
 }));
+
+app.use(authParser)
 
 // connect to db
 initializeDb(config, db => {
