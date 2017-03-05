@@ -1,7 +1,7 @@
 import resource from 'resource-router-middleware';
 import Account from '../models/account';
 
-const actionRewards = {SHARE: 200, ADD_FRIEND: 50};
+const actionRewards = {SHARE: 200, ADD_FRIEND: 50, CAP: -200, SHIRT: -1000, MEAL: -5000};
 
 export default ({config, db}) => resource({
   /** Property name to store preloaded entity on `request`. */
@@ -24,15 +24,16 @@ export default ({config, db}) => resource({
         }
       );
   },
-  update({body: {userId, actions}}, res) {
-    Account.findOne({userId}).then(account => {
+  update({params: { account }, body: { actions}}, res) {
+    Account.findOne({userId: account}, 'points').then(account => {
       if (account) {
-        const newPoints = account.points +
+        const newPoints = (account.points || 0) +
           actions.reduce(
             (sum, actionName) => sum + actionRewards[actionName],
             0
           );
-        account
+        if (newPoints >= 0) {
+          account
           .update({points: newPoints})
           .then(() => {
             res.status(200).send({newPoints});
@@ -40,6 +41,9 @@ export default ({config, db}) => resource({
           .catch(() => {
             res.status(500);
           });
+        } else {
+          res.status(500);
+        }
       } else {
         res.status(500);
       }
