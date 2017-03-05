@@ -7,15 +7,21 @@ export default ({config, db}) => resource({
   /** Property name to store preloaded entity on `request`. */
   id: 'account',
   /** POST / - Create a new entity */
-  create({body: {userId, accessToken}}, res) {
+  create({body: { userId, accessToken }}, res) {
+    console.log(userId);
     Account
       .findOne({userId})
       .then(account => {
-        if (account) return account.update({accessToken});
+        console.log(account);
+        if (account) {
+          account.update({accessToken});
+          return account;
+        }
         return Account.create({userId, accessToken, points: 0});
       })
       .then(
         account => {
+          console.log(account);
           res.status(200).send(account);
         },
         err => {
@@ -26,12 +32,14 @@ export default ({config, db}) => resource({
   },
   update({params: { account }, body: { actions}}, res) {
     Account.findOne({userId: account}, 'points').then(account => {
+      console.log(account);
       if (account) {
         const newPoints = (account.points || 0) +
           actions.reduce(
             (sum, actionName) => sum + actionRewards[actionName],
             0
           );
+          console.log(newPoints);
         if (newPoints >= 0) {
           account
           .update({points: newPoints})
